@@ -33,9 +33,11 @@ class Translated(Base):
         return (
             u'Translated(src={src}, dest={dest}, text={text}, pronunciation={pronunciation}, '
             u'extra_data={extra_data})'.format(
-                src=self.src, dest=self.dest, text=self.text,
+                src=self.src,
+                dest=self.dest,
+                text=self.text,
                 pronunciation=self.pronunciation,
-                extra_data='"' + repr(self.extra_data)[:10] + '..."'
+                extra_data=f'"{repr(self.extra_data)[:10]}..."',
             )
         )
 
