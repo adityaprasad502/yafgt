@@ -57,7 +57,7 @@ class Translator(object):
         self.client = httpx.AsyncClient(http2=http2)
         if proxy is not None:  # pragma: nocover
             self.client.proxy = proxy
-    
+
         self.headers = {
             'User-Agent': user_agent,
         }
@@ -65,23 +65,20 @@ class Translator(object):
         if timeout is not None:
             self.client.timeout = timeout
 
+        self.client_type = 'webapp'
         if (service_urls is not None):
-            #default way of working: use the defined values from user app
             self.service_urls = service_urls
-            self.client_type = 'webapp'
             self.token_acquirer = TokenAcquirer(
                 client=self.client, host=self.service_urls[0])
 
             #if we have a service url pointing to client api we force the use of it as defaut client
-            for t in enumerate(service_urls):
-                api_type = re.search('googleapis',service_urls[0])
-                if (api_type):
+            for _ in enumerate(service_urls):
+                if api_type := re.search('googleapis', service_urls[0]):
                     self.service_urls = ['translate.googleapis.com']
                     self.client_type = 'gtx'
                     break
         else:
             self.service_urls = ['translate.google.com']
-            self.client_type = 'webapp'
             self.token_acquirer = TokenAcquirer(
                 client=self.client, host=self.service_urls[0])
 
@@ -107,8 +104,9 @@ class Translator(object):
             return data, r
 
         if self.raise_exception:
-            raise Exception('Unexpected status code "{}" from {}'.format(
-                r.status_code, self.service_urls))
+            raise Exception(
+                f'Unexpected status code "{r.status_code}" from {self.service_urls}'
+            )
 
         DUMMY_DATA[0][0][0] = text
         return DUMMY_DATA, r
@@ -128,13 +126,10 @@ class Translator(object):
             14: 'see-also',
         }
 
-        extra = {}
-
-        for index, category in response_parts_name_mapping.items():
-            extra[category] = data[index] if (
-                index < len(data) and data[index]) else None
-
-        return extra
+        return {
+            category: data[index] if (index < len(data) and data[index]) else None
+            for index, category in response_parts_name_mapping.items()
+        }
 
     async def translate(self, text, dest='en', src='auto', **kwargs):
         """Translate text from source language to destination language
@@ -205,7 +200,7 @@ class Translator(object):
         data, response = await self._translate(text, dest, src, kwargs)
 
         # this code will be updated when the format is changed.
-        translated = ''.join([d[0] if d[0] else '' for d in data[0]])
+        translated = ''.join([d[0] or '' for d in data[0]])
 
         extra_data = self._parse_extra_data(data)
 
@@ -231,13 +226,15 @@ class Translator(object):
         if dest in EXCLUDES and pron == origin:
             pron = translated
 
-        # put final values into a new Translated object
-        result = Translated(src=src, dest=dest, origin=origin,
-                            text=translated, pronunciation=pron,
-                            extra_data=extra_data,
-                            response=response)
-
-        return result
+        return Translated(
+            src=src,
+            dest=dest,
+            origin=origin,
+            text=translated,
+            pronunciation=pron,
+            extra_data=extra_data,
+            response=response,
+        )
 
     async def detect(self, text, **kwargs):
         """Detect language of the input text
@@ -292,6 +289,4 @@ class Translator(object):
                 confidence = data[8][-2][0]
         except Exception:  # pragma: nocover
             pass
-        result = Detected(lang=src, confidence=confidence, response=response)
-
-        return result
+        return Detected(lang=src, confidence=confidence, response=response)
