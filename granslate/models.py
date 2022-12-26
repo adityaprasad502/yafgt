@@ -16,8 +16,10 @@ class Translated(Base):
     :param text: translated text
     :param pronunciation: pronunciation
     """
-    def __init__(self, src, dest, origin, text, pronunciation, extra_data=None,
-                 **kwargs):
+
+    def __init__(
+        self, src, dest, origin, text, pronunciation, extra_data=None, **kwargs
+    ):
         super().__init__(**kwargs)
         self.src = src
         self.dest = dest
@@ -31,8 +33,8 @@ class Translated(Base):
 
     def __unicode__(self):  # pragma: nocover
         return (
-            u'Translated(src={src}, dest={dest}, text={text}, pronunciation={pronunciation}, '
-            u'extra_data={extra_data})'.format(
+            "Translated(src={src}, dest={dest}, text={text}, pronunciation={pronunciation}, "
+            "extra_data={extra_data})".format(
                 src=self.src,
                 dest=self.dest,
                 text=self.text,
@@ -40,6 +42,7 @@ class Translated(Base):
                 extra_data=f'"{repr(self.extra_data)[:10]}..."',
             )
         )
+
 
 class Detected(Base):
     """Language detection result object
@@ -56,5 +59,6 @@ class Detected(Base):
         return self.__unicode__()
 
     def __unicode__(self):  # pragma: nocover
-        return u'Detected(lang={lang}, confidence={confidence})'.format(
-            lang=self.lang, confidence=self.confidence)
+        return "Detected(lang={lang}, confidence={confidence})".format(
+            lang=self.lang, confidence=self.confidence
+        )
