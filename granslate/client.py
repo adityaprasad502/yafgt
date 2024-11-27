@@ -5,7 +5,9 @@ A Translation module.
 You can translate text using this module.
 """
 
-import contextlib, random, re
+import contextlib
+import random
+import re
 
 import httpx
 

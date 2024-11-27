@@ -1,5 +1,7 @@
 """A conversion module for googletrans"""
-import json, re
+
+import json
+import re
 
 
 def build_params(client, query, src, dest, token, override):

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import contextlib, os.path, re
+import contextlib
+import os.path
+import re
 
 from setuptools import find_packages, setup
 
@@ -54,7 +56,7 @@ def install():
         packages=find_packages(exclude=["docs", "tests"]),
         keywords="google translate translator",
         install_requires=[
-            "httpx[http2]==0.23.0",
+            "httpx[http2]==0.25.2",
         ],
         tests_require=[
             "pytest",
